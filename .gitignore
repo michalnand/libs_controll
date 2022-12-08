@@ -1,2 +1,7 @@
 .DSStore
 *DSStore
+
+*.egg-info
+
+
+__pycache__/
