@@ -21,6 +21,15 @@ class LQC(torch.nn.Module):
         super().__init__()
 
         controll_mat        = init_range*torch.randn((required_inputs_dim + system_order_dim, system_inputs_dim)).float()
+
+        '''
+        for i in range(required_inputs_dim):
+            controll_mat[i] = 1.0
+
+        for i in range(system_order_dim):
+            controll_mat[i + required_inputs_dim] = -1.0
+        '''
+
         self.controll_mat   = torch.nn.parameter.Parameter(controll_mat, requires_grad=True)
 
     def __repr__(self):

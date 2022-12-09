@@ -2,13 +2,13 @@ import torch
 import LibsControll 
 
 
-dt = 1.0/100.0
+dt = 1.0/200.0
 
 '''
 create example dynamical system, 4th order
 state is : pos1, pos2, vel1, vel2
 '''
-plant       = LibsControll.TwoCarts() 
+plant       = LibsControll.BalancingRobot() 
 
 print(str(plant))
 
@@ -22,7 +22,7 @@ controller   = LibsControll.fit_controller(LibsControll.LQC, plant, steps = 400,
 plot result for step response
 '''
 t_trajectory, y_req_trajectory, u_trajectory, y_trajectory  = LibsControll.step_response(controller, plant, amplitudes=[0, 1, 0, 0], dt=dt)
-LibsControll.plot_controll_output(t_trajectory, u_trajectory, y_req_trajectory, y_trajectory, ["force [N]"], ["position 1 [m]", "position 2 [m]", "speed 1 [m/s]", "speed 2 [m/s]"], "images/carts_step_response.png")
+LibsControll.plot_controll_output(t_trajectory, u_trajectory, y_req_trajectory, y_trajectory, ["force [N]"], ["position 1 [m]", "position 2 [m]", "speed 1 [m/s]", "speed 2 [m/s]"], "images/balancing_robot_step_response.png")
 
 print(str(controller))
 

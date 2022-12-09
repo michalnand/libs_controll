@@ -12,7 +12,7 @@ class ClosedLoopResponse:
 
         self.solver      = ODESolverRK4(plant)
 
-    def step(self, input, state_noise = 0.0, observation_noise = 0.0):
+    def step(self, input, state_noise = 0.0, observation_noise = 0.0, random_initial_state = 0.0):
 
         trajectory_length = input.shape[0]
         batch_size        = input.shape[1]
@@ -23,7 +23,7 @@ class ClosedLoopResponse:
 
         #plant state, zero initial conditions
         x_state      = torch.zeros((batch_size, plant_order)).float()
-        x_state+= torch.randn_like(x_state)
+        x_state+= random_initial_state*torch.randn_like(x_state)
         
         #storage for controller output
         u_trajectory  = torch.zeros((trajectory_length, batch_size, plant_inputs_count)).float()

@@ -3,7 +3,7 @@ from .signal_source         import *
 from .closed_loop_response  import *
 
 
-def step_response(controller, plant, amplitudes, trajectory_length = 500, dt = 1.0/200.0):
+def step_response(controller, plant, amplitudes, trajectory_length = 200, dt = 1.0/200.0):
 
    
     required_inputs_dim     = plant.mat_c.shape[0]
