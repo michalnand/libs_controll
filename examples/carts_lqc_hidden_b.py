@@ -18,7 +18,7 @@ print(str(plant))
 train controller, 400 steps trajectory length
 care only for pos2, loss_weight=[0, 1, 0, 0]
 '''
-controller   = LibsControll.fit_controller(LibsControll.LQCHidden, plant, steps = 400, amplitudes=[0, 1], loss_weight=[0, 1], dt=dt, batch_size=batch_size)
+controller   = LibsControll.fit_controller(LibsControll.LQCHidden, plant, steps = 10, amplitudes=[0, 1], loss_weight=[0, 1], dt=dt, batch_size=batch_size)
 
 '''
 plot result for step response
@@ -43,9 +43,11 @@ y_req[:, 1] = 1.0
 x     = torch.zeros((1, plant.mat_a.shape[0]))
 h     = torch.zeros((1, controller.hidden_dim))
 
+
 steps = 0
 
 while True:
+    print(">>>> ", y_req.shape, h.shape)
     h, y, x = clr.step(y_req, x, h)
 
     plant.render()

@@ -18,13 +18,13 @@ print(str(plant))
 train controller, 400 steps trajectory length
 care only for pos2, loss_weight=[0, 1, 0, 0]
 '''
-controller   = LibsControll.fit_controller(LibsControll.LQCHidden, plant, steps = 400, amplitudes=[0, 1], loss_weight=[0, 1], dt=dt, batch_size=batch_size)
+controller   = LibsControll.fit_controller(LibsControll.Nonlinear, plant, steps = 400, amplitudes=[0, 1], loss_weight=[0, 1], dt=dt, batch_size=batch_size)
 
 '''
 plot result for step response
 '''
 t_trajectory, y_req_trajectory, y_trajectory, u_trajectory  = LibsControll.step_response_closed_loop(controller, plant, amplitudes=[0, 1], dt=dt)
-LibsControll.plot_controll_output(t_trajectory, u_trajectory, y_req_trajectory, y_trajectory, ["force [N]"], ["position 1 [m]", "position 2 [m]"], "images/carts_lqc_hidden.png")
+LibsControll.plot_controll_output(t_trajectory, u_trajectory, y_req_trajectory, y_trajectory, ["force [N]"], ["position 1 [m]", "position 2 [m]"], "images/carts_nonlinear.png")
 
 print(str(controller))
 

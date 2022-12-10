@@ -12,15 +12,15 @@ class ClosedLoopResponseContinuous:
 
         self.solver      = ODESolverRK4(plant)
 
-    def step(self, required, plant_state_x, controller_hidden = None):
+    def step(self, y_required, y_output, x_state, h_state = None):
 
         if hasattr(self.controller, "hidden_dim"):
-            controller_hidden, u = self.controller(required, plant_state_x, controller_hidden) 
+            u, h_state = self.controller(y_required, y_output, h_state) 
         else:
-            u = self.controller(required, plant_state_x) 
+            u = self.controller(y_required, x_state)  
 
-        x_new, y = self.solver.step(plant_state_x, u, self.dt)
+        y, x_new = self.solver.step(x_state, u, self.dt)
  
-        return controller_hidden, y, x_new
+        return y, x_new, h_state
  
         

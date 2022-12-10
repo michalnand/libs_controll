@@ -15,15 +15,14 @@ def step_response_closed_loop(controller, plant, amplitudes, trajectory_length =
         
     clr = ClosedLoopResponse(plant, controller, dt)
 
-    u_trajectory, y_trajectory = clr.step(y_req_trajectory)
+    y_trajectory, u_trajectory = clr.step(y_req_trajectory)
 
     t_trajectory = dt*torch.arange(0, u_trajectory.shape[0])
 
-    y_req_trajectory = y_req_trajectory.squeeze(1)
-    u_trajectory = u_trajectory.squeeze(1)
-    y_trajectory = y_trajectory.squeeze(1)
+    y_req_trajectory    = y_req_trajectory.squeeze(1)
+    y_trajectory        = y_trajectory.squeeze(1)
+    u_trajectory        = u_trajectory.squeeze(1)
 
-   
 
-    return t_trajectory, y_req_trajectory, u_trajectory, y_trajectory
+    return t_trajectory, y_req_trajectory, y_trajectory, u_trajectory
           

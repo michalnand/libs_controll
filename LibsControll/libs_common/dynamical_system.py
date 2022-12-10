@@ -31,7 +31,7 @@ class DynamicalSystem(torch.nn.Module):
         dx = torch.mm(x, self.mat_a.T) + torch.mm(u, self.mat_b.T)
         y  = torch.mm(x, self.mat_c)
 
-        return dx, y
+        return y, dx
 
 
     def __repr__(self):
