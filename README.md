@@ -77,7 +77,7 @@ while True:
 
 
 ### step response
-![two_carts](doc/carts_step_response.png)
+![two_carts](doc/carts_lqc.png)
 
 ### controller matrix
 
