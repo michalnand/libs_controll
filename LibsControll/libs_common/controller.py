@@ -78,6 +78,76 @@ class LQCHidden(torch.nn.Module):
         return u, h_state_new  
 
 
+class LQG(torch.nn.Module):
+    def __init__(self, y_required_dim, x_state_dim, u_dim, y_output_dim, init_range = 0.0, init_range_observer = 0.0001):
+        super().__init__()
+
+        self.hidden_dim     = x_state_dim
+
+        controll_mat        = init_range*torch.randn((y_required_dim + y_output_dim + x_state_dim, u_dim)).float()
+        self.controll_mat   = torch.nn.parameter.Parameter(controll_mat, requires_grad=True)
+
+        mat_a               = 0*init_range_observer*torch.randn((x_state_dim, x_state_dim)).float()
+        self.mat_a          = torch.nn.parameter.Parameter(mat_a, requires_grad=True)
+
+        mat_c               = 0*init_range_observer*torch.randn((x_state_dim, y_output_dim)).float()
+        self.mat_c          = torch.nn.parameter.Parameter(mat_c, requires_grad=True)
+
+        mat_k               = init_range_observer*torch.randn((y_output_dim, x_state_dim)).float()
+        self.mat_k          = torch.nn.parameter.Parameter(mat_k, requires_grad=True)
+
+    def __repr__(self):
+        res = ""
+
+        res+= "mat_a=\n"
+        for j in range(self.mat_a.shape[0]):
+            for i in range(self.mat_a.shape[1]):
+                v = round(float(self.mat_a[j][i]), 4)
+                res+= str("%8.4f"%v) + " "
+            res+= "\n"
+        res+= "\n"
+
+        res+= "mat_c=\n"
+        for j in range(self.mat_c.shape[0]):
+            for i in range(self.mat_c.shape[1]):
+                v = round(float(self.mat_c[j][i]), 4)
+                res+= str("%8.4f"%v) + " "
+            res+= "\n"
+        res+= "\n"
+
+        res+= "mat_k=\n"
+        for j in range(self.mat_k.shape[0]):
+            for i in range(self.mat_k.shape[1]):
+                v = round(float(self.mat_k[j][i]), 4)
+                res+= str("%8.4f"%v) + " "
+            res+= "\n"
+        res+= "\n" 
+
+        res+= "controll_mat=\n"
+        for j in range(self.controll_mat.shape[0]):
+            for i in range(self.controll_mat.shape[1]):
+                v = round(float(self.controll_mat[j][i]), 4)
+                res+= str("%8.4f"%v) + " "
+            res+= "\n"
+        res+= "\n"
+
+        return res
+    
+    def forward(self, y_required, y_output, x_hat):
+        #prediction
+        y_hat = torch.mm(x_hat, self.mat_c)
+        error = y_output - y_hat
+
+        #Kalman gain
+        g     = torch.mm(error, self.mat_k)
+        
+        #update
+        x_hat_new = x_hat + g + torch.mm(x_hat, self.mat_a) #+ torch.mm(u_old, self.mat_b)
+
+        x   = torch.cat([y_required, y_output, x_hat_new], dim=1)    
+        u   = torch.mm(x, self.controll_mat) 
+    
+        return u, x_hat_new
 
 '''
 class Observer(torch.nn.Module):
