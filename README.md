@@ -1,5 +1,12 @@
 # pytorch dynamical systems controll library
 
+- trajectory is computed by forward pass
+- backward pass truth graph learns controller
+- works for linear and nonlinear systems / controller
+
+![overview](doc/diagrams/overview.png)
+
+
 ## install
 
 ```bash
@@ -13,6 +20,7 @@ opencv for visualisation
 ## two carts controll example
 
 ![two_carts](doc/two_carts.gif)
+
 
 ```python
 import torch
@@ -76,11 +84,11 @@ while True:
 ```
 controll_mat=
  -0.0000 
-  2.0659 
+  1.3169 
   0.0000 
   0.0000 
- -1.1050 
- -0.9079 
- -0.3687 
- -0.4270 
+ -0.4724 
+ -0.8544 
+ -0.1259 
+ -0.2667
 ```

@@ -31,6 +31,10 @@ class ClosedLoopResponse:
         #storage for plant output
         y_trajectory  = torch.zeros((trajectory_length, batch_size, plant_outputs_count)).float()
 
+        #controller hidden state, if any
+        if hasattr(self.controller, "hidden_dim"):
+            h_state  = torch.zeros((batch_size, self.controller.hidden_dim)).float()
+
         y = torch.zeros((batch_size, plant_outputs_count)).float()
 
 
@@ -38,7 +42,10 @@ class ClosedLoopResponse:
             y_noise = observation_noise*torch.randn((batch_size, plant_outputs_count)).float() 
             x_noise = state_noise*torch.randn((batch_size, plant_order)).float() 
 
-            u = self.controller(input[t], y + y_noise) 
+            if hasattr(self.controller, "hidden_dim"):
+                h_state, u = self.controller(input[t], y + y_noise, h_state) 
+            else:
+                u = self.controller(input[t], y + y_noise) 
 
             x_new, y = self.solver.step(x_state, u, self.dt)
  

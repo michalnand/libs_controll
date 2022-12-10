@@ -2,19 +2,18 @@ import torch
 from .signal_source         import *
 from .closed_loop_response  import *
 
-def fit_controller(ControllerC, plant, steps = 200, amplitudes = [1.0, 1.0, 1.0, 1.0], loss_weight = [1.0, 1.0, 1.0, 1.0], x_noise = 0.01, y_noise = 0.0, lr = 1.0, dt=0.01):
+def fit_controller(ControllerC, plant, steps = 200, amplitudes = [1.0, 1.0, 1.0, 1.0], loss_weight = [1.0, 1.0, 1.0, 1.0], x_noise = 0.01, y_noise = 0.0, batch_size = 64, lr = 0.1, dt=0.01):
 
-    required_inputs_dim     = plant.mat_c.shape[0]
+    required_inputs_dim     = plant.mat_c.shape[1]
     system_order_dim        = plant.mat_a.shape[0]
     plant_inputs_count      = plant.mat_b.shape[1]
-    plant_outputs_count     = plant.mat_c.shape[0]
+    plant_outputs_count     = plant.mat_c.shape[1]
 
     controller  = ControllerC(required_inputs_dim, system_order_dim, plant_inputs_count)
 
     optimizer   = torch.optim.AdamW(controller.parameters(), lr = lr)
 
     trajectory_length   = 400
-    batch_size          = 64 
     
     #required_source = SignalSquare(trajectory_length, required_inputs_dim, amplitudes=amplitudes)
     required_source     = SignalUnitStep(trajectory_length, required_inputs_dim, amplitudes=amplitudes)
@@ -29,7 +28,7 @@ def fit_controller(ControllerC, plant, steps = 200, amplitudes = [1.0, 1.0, 1.0,
         y_req_trajectory  = torch.from_numpy(y_req_trajectory)
 
         #compute plant output
-        u_trajectory, y_trajectory = clr.step(y_req_trajectory, x_noise, y_noise, random_initial_state = 1.0)
+        u_trajectory, y_trajectory = clr.step(y_req_trajectory, x_noise, y_noise, random_initial_state = 0.1)
 
         loss_trajectory = 0  
 
@@ -49,8 +48,7 @@ def fit_controller(ControllerC, plant, steps = 200, amplitudes = [1.0, 1.0, 1.0,
         
         if step%10 == 0:
             print("loss = ", loss_trajectory.detach().to("cpu").numpy(), loss_controll.detach().to("cpu").numpy())
-
-  
+            print(str(controller))
 
     return controller
           

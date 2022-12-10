@@ -21,8 +21,8 @@ controller   = LibsControll.fit_controller(LibsControll.LQC, plant, steps = 400,
 '''
 plot result for step response
 '''
-t_trajectory, y_req_trajectory, u_trajectory, y_trajectory  = LibsControll.step_response(controller, plant, amplitudes=[0, 1, 0, 0], dt=dt)
-LibsControll.plot_controll_output(t_trajectory, u_trajectory, y_req_trajectory, y_trajectory, ["force [N]"], ["position 1 [m]", "position 2 [m]", "speed 1 [m/s]", "speed 2 [m/s]"], "images/carts_step_response.png")
+t_trajectory, y_req_trajectory, u_trajectory, y_trajectory  = LibsControll.step_response_closed_loop(controller, plant, amplitudes=[0, 1, 0, 0], dt=dt)
+LibsControll.plot_controll_output(t_trajectory, u_trajectory, y_req_trajectory, y_trajectory, ["force [N]"], ["position 1 [m]", "position 2 [m]", "speed 1 [m/s]", "speed 2 [m/s]"], "images/carts_lqc.png")
 
 print(str(controller))
 
@@ -35,15 +35,15 @@ print("training done")
 
 clr = LibsControll.ClosedLoopResponseContinuous(plant, controller, dt)
 
-y_req       = torch.zeros((1, plant.mat_a.shape[0]))
-y_req[:, :] = 1.0
+y_req       = torch.zeros((1, plant.mat_c.shape[1]))
+y_req[:, 1] = 1.0
 
 x     = torch.zeros((1, plant.mat_a.shape[0]))
 
 steps = 0
 
 while True:
-    y, x = clr.step(y_req, x)
+    _, y, x = clr.step(y_req, x)
 
     plant.render()
 

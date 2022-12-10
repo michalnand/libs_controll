@@ -6,12 +6,13 @@ import LibsControll
 
  
 class TwoCarts(torch.nn.Module):
-    def __init__(self, m1 = 0.14, m2 = 0.17, c1 = 0.2, c2 = 0.3, k = 1.9):
+    def __init__(self, m1 = 0.14, m2 = 0.17, c1 = 0.2, c2 = 0.3, k = 1.9, fully_observed = True):
         super().__init__()
 
         self.mat_a = torch.zeros((4, 4))
         self.mat_b = torch.zeros((4, 1))
-        self.mat_c = torch.zeros((4, 4))
+        
+
 
         self.mat_a[0][2] =  1.0
         self.mat_a[1][3] =  1.0
@@ -27,14 +28,24 @@ class TwoCarts(torch.nn.Module):
 
         self.mat_b[2][0] = 1.0/m1
 
-        self.mat_c[0][0] = 1.0
-        self.mat_c[1][1] = 1.0
-        self.mat_c[2][2] = 1.0 
-        self.mat_c[3][3] = 1.0
+        
+
+        if fully_observed:
+            self.mat_c = torch.zeros((4, 4))
+            self.mat_c[0][0] = 1.0
+            self.mat_c[1][1] = 1.0
+            self.mat_c[2][2] = 1.0 
+            self.mat_c[3][3] = 1.0
+        else:
+            self.mat_c = torch.zeros((4, 2))
+            self.mat_c[0][0] = 1.0
+            self.mat_c[1][1] = 1.0
+            
 
         self.plant       = LibsControll.DynamicalSystem(self.mat_a, self.mat_b, self.mat_c)
 
-
+    def reset(self):
+        self.plant.reset()
 
     def forward(self, x, u):
         self.x = x
